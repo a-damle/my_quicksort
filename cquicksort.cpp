@@ -5,10 +5,10 @@
 #include <random>
 #include <chrono>
 #include <future>
+#include <functional>
 
 
-
-const int total_threads = 10;
+const int total_threads = 4;
 int used_threads = 0;
 
 
@@ -74,9 +74,12 @@ void quicksort(std::vector<int> &unsortedlist, int start, int end)
 		int q = randomized_partition(unsortedlist, start, end);
         	if(used_threads < total_threads)
 		{
-			auto handle_low = std::async(std::launch::async, , mid, end);
-			quicksort(unsortedlist, start, q-1);
+			used_threads++;
+			auto handle_low = std::async(quicksort, std::ref(unsortedlist), start, q-1);
+			//quicksort(unsortedlist, start, q-1);
         		quicksort(unsortedlist, q+1, end);
+			handle_low.get();
+			used_threads--;
 		}
 		else
 		{
