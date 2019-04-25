@@ -6,9 +6,9 @@
 #include <chrono>
 #include <future>
 #include <functional>
+#include <thread>
 
-
-const int total_threads = 4;
+int total_threads = 8;
 int used_threads = 0;
 
 
@@ -110,7 +110,7 @@ int main()
 {
 	std::vector<int> unsorted_list;
 
-    	for(int i = 0; i<10000; i++)
+    	for(int i = 0; i<1000000; i++)
     	{
     		unsorted_list.push_back(rng(0, 999999));
     
@@ -120,15 +120,33 @@ int main()
 
 	std::vector<int> numbers = unsorted_list;
 
+	std::vector<int> unsorted_list2 = unsorted_list;
+	
 	auto start = std::chrono::high_resolution_clock::now(); 
 	
-	quicksort(unsorted_list, 0, (unsigned int)(unsorted_list.size()-1));
+	quicksort(unsorted_list, 0, unsorted_list.size()-1);
     
 	auto stop = std::chrono::high_resolution_clock::now();
 
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
     	
-	std::cout<<"my time"<<duration.count()<<"\t";
+	std::cout<<total_threads<<" threads async time: "<<duration.count()<<"\n";
+
+
+
+	total_threads = -1;
+	start = std::chrono::high_resolution_clock::now(); 
+	
+	quicksort(unsorted_list2, 0, unsorted_list2.size()-1);
+    
+	stop = std::chrono::high_resolution_clock::now();
+
+	duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    	
+	std::cout<<"serial time: "<<duration.count()<<"\n";
+
+
+
 
 	
 	start = std::chrono::high_resolution_clock::now(); 
@@ -138,6 +156,12 @@ int main()
 
 	duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
     	
-	std::cout<<"c++ time"<<duration.count()<<"\n";
+	std::cout<<"c++ time: "<<duration.count()<<"\n";
 
+	bool are_equal = numbers == unsorted_list;
+	are_equal = are_equal && (numbers == unsorted_list2);
+
+	std::cout<<"all equal: "<<are_equal<<"\n";
+
+	std::cout<<"thread count: "<<std::thread::hardware_concurrency()<<"\n";
 }
