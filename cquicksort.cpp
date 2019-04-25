@@ -7,8 +7,10 @@
 #include <future>
 #include <functional>
 #include <thread>
+#include <string>
 
-int total_threads = 8;
+
+int total_threads = 3;
 int used_threads = 0;
 
 
@@ -78,8 +80,8 @@ void quicksort(std::vector<int> &unsortedlist, int start, int end)
 			auto handle_low = std::async(quicksort, std::ref(unsortedlist), start, q-1);
 			//quicksort(unsortedlist, start, q-1);
         		quicksort(unsortedlist, q+1, end);
-			handle_low.get();
-			used_threads--;
+			//handle_low.get();
+			//used_threads--;
 		}
 		else
 		{
@@ -122,6 +124,9 @@ int main()
 
 	std::vector<int> unsorted_list2 = unsorted_list;
 	
+	std::string blocking;
+	std::cin>>blocking;
+	std::cout<<"now testing async\n";
 	auto start = std::chrono::high_resolution_clock::now(); 
 	
 	quicksort(unsorted_list, 0, unsorted_list.size()-1);

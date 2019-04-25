@@ -1,0 +1,3 @@
+ for 1 million 
+sequential .22 s 
+concurrent .16 s
